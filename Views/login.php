@@ -9,10 +9,10 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
         if($user['role'] == "ROLE_CLIENT"){
             $_SESSION['username'] = $user['email'];
             $_SESSION['password'] = $user['password'];
-            //Client
+            //User
             header("location: home.php");
         }else{
-            //Agent
+            //agent
             header("location: index.php");
         }
     }else {

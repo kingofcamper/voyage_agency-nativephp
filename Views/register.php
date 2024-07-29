@@ -1,60 +1,51 @@
 <?php
+session_start();
 include "../Classes/Authentication.php";
 $auth = new Authentication();
-$msg = false;
-if(isset($_POST['register'])){
-    //Verification email existant
-    $res = $auth->verifEmail($_POST['email']);
+if(isset($_POST['username']) && isset($_POST['password'])) {
+    $res = $auth->signin($_POST['username'], $_POST['password']);
+    $user = $res->fetch();
     if($res->rowCount() > 0){
-        $msg = true;
+        if($user['role'] == "ROLE_CLIENT"){
+            $_SESSION['username'] = $user['email'];
+            $_SESSION['password'] = $user['password'];
+            //User
+            header("location: home.php");
+        }else{
+            //agent
+            header("location: index.php");
+        }
     }else {
-        $auth->signup($_POST);
-        header("location: login.php");
+        echo "Failure: Invalid password or username";
     }
+
 }
 ?>
 <!DOCTYPE html>
 <!-- Coding by CodingLab | www.codinglabweb.com-->
 <html lang="en" dir="ltr">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Registration </title>
+    <title> Login </title>
     <link rel="stylesheet" href="style.css">
-   </head>
+</head>
 <body>
-  <div class="wrapper">
-    <h2>Registration</h2>
+<div class="wrapper">
+    <h2>LOGIN</h2>
     <form action="" method="post">
-        <?php
-        if($msg){
-            echo "Username Already exist";
-        }
-        ?>
-      <div class="input-box">
-        <input type="text" name="nom" placeholder="Enter your name" required>
-      </div>
-      <div class="input-box">
-        <input type="text" name="pr" placeholder="Enter your lastname" required>
-      </div>
-      <div class="input-box">
-        <input type="text" name="email" placeholder="Enter your email" required>
-      </div>
-      <div class="input-box">
-        <input type="password" name="password" placeholder="Create password" required>
-      </div>
-      <div class="input-box">
-        <input type="password" placeholder="Confirm password" required>
-      </div>
+        <div class="input-box">
+            <input type="text" name="username" placeholder="Enter your username" required>
+        </div>
+        <div class="input-box">
+            <input type="password" name="password" placeholder="Enter your password" required>
+        </div>
 
-      <div class="input-box button">
-        <input type="Submit" name="register" value="Register Now">
-      </div>
-      <div class="text">
-        <h3>Already have an account? <a href="login.php">Login now</a></h3>
-      </div>
+        <div class="input-box button">
+            <input type="Submit" name="login" value="Signin">
+        </div>
     </form>
-  </div>
+</div>
 
 </body>
 </html>
